@@ -1,6 +1,8 @@
 ﻿using Alura.ListaLeitura.App.Repositorio;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,28 +10,20 @@ namespace Alura.ListaLeitura.App
 {
     public class Startup
     {
-        public void Configure(IApplicationBuilder app)
+        public void ConfigureServices(IServiceCollection services)
         {
-            app.Run(Roteamento);
+            services.AddRouting();
         }
 
-        public Task Roteamento(HttpContext context)
+        public void Configure(IApplicationBuilder app)
         {
-            var _repo = new LivroRepositorioCSV();
-            var caminhosAtendidos = new Dictionary<string, RequestDelegate>
-            {
-                {"/Livros/ParaLer", LivrosParaLer},
-                {"/Livros/Lendo", LivrosLendo },
-                {"/Livros/Lidos", LivrosLidos }
-            };
-            if (caminhosAtendidos.ContainsKey(context.Request.Path))
-            {
-                var metodo = caminhosAtendidos[context.Request.Path];
-                return metodo.Invoke(context);
-            }
+            var builder = new RouteBuilder(app);
+            builder.MapRoute("Livros/ParaLer", LivrosParaLer);
+            builder.MapRoute("Livros/Lendo", LivrosLendo);
+            builder.MapRoute("Livros/Lidos", LivrosLidos);
 
-            context.Response.StatusCode = 404;
-            return context.Response.WriteAsync("Caminho inexistente");
+            var rotas = builder.Build();
+            app.UseRouter(rotas);
         }
 
         public Task LivrosParaLer(HttpContext context)
