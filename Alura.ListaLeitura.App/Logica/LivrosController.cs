@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Alura.ListaLeitura.App.Logica
 {
-    public class LivrosLogica
+    public class LivrosController
     {
         public static Task Detalhes(HttpContext context)
         {
@@ -45,11 +45,6 @@ namespace Alura.ListaLeitura.App.Logica
             var _repo = new LivroRepositorioCSV();
 
             return context.Response.WriteAsync(_repo.Lidos.ToString());
-        }
-
-        public static Task Teste(HttpContext context)
-        {
-            return context.Response.WriteAsync("Teste nova URL");
         }
     }
 }
