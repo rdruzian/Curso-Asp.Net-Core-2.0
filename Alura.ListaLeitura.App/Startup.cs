@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -28,9 +29,42 @@ namespace Alura.ListaLeitura.App
             //{id:int} so vai aceitar valores do tipo inteiro na requisição
             builder.MapRoute("Livros/Detalhes/{id:int}", ExibeDetalhes);
 
+            builder.MapRoute("Cadastro/NovoLivro", ExibeForm);
+            builder.MapRoute("Cadastro/Incluir", ProcessaForm);
 
             var rotas = builder.Build();
             app.UseRouter(rotas);
+        }
+
+        private Task ProcessaForm(HttpContext context)
+        {
+            var livro = new Livro()
+            {
+                //Converte o que vem da requisição para montar o objeto
+                Titulo = context.Request.Form["titulo"].First(),
+                Autor = context.Request.Form["autor"].First(),
+            };
+            var repo = new LivroRepositorioCSV();
+
+            repo.Incluir(livro);
+            return context.Response.WriteAsync("O livro foi adicionado com sucesso!");
+        }
+
+        private Task ExibeForm(HttpContext context)
+        {
+            var html = CarregaHtml("form");
+
+            return context.Response.WriteAsync(html);
+        }
+
+        private string CarregaHtml(string nomeArquivo)
+        {
+            var nomeCompleto = $"HTML/{nomeArquivo}.html";
+            using (var arquivo = File.OpenText(nomeCompleto))
+            {
+                return arquivo.ReadToEnd();
+            }
+
         }
 
         private Task ExibeDetalhes(HttpContext context)
