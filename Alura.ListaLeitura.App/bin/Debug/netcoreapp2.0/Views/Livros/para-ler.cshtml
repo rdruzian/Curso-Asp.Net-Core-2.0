@@ -10,9 +10,16 @@
         <tr>
             <th>Titulo</th>
             <th>Autor</th>
-            <th></th>
+            <th>Ações</th>
         </tr>
-        <tr></tr>
-    </table>
+        @foreach (var livro in ViewBag.Livros)
+        {
+            <tr>
+                <td>@livro.Titulo</td>
+                <td>@livro.Autor</td>
+                <td></td>
+            </tr>
+        }
+        </table>
 </body>
 </html>
